@@ -1,1 +1,1 @@
-# pgbackrest-sidecar
+# pgskipper-pgbackrest-sidecar
