@@ -32,7 +32,12 @@ RUN apk add --update busybox && \
 COPY --from=builder /workspace/build/_output/bin/pgskipper-pgbackrest-sidecar /usr/local/bin/pgskipper-pgbackrest-sidecar
 COPY build/start.sh /opt/start.sh
 
-RUN chmod 770 /var/lib/pgbackrest && \
+
+RUN chgrp 0 /etc &&  \
+    chmod g+w /etc && \
+    chgrp 0 /etc/passwd &&  \
+    chmod g+w /etc/passwd && \
+    chmod 770 /var/lib/pgbackrest && \
     chmod 770 /var/log/pgbackrest && \
     chmod 770 /var/spool/pgbackrest && \
     chown postgres:0 /var/lib/pgbackrest && \
