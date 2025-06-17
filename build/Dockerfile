@@ -21,13 +21,13 @@ ARG TARGETOS TARGETARCH
 RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -o ./build/_output/bin/pgskipper-pgbackrest-sidecar \
     -gcflags all=-trimpath=${GOPATH} -asmflags all=-trimpath=${GOPATH} ./main/main.go
 
-FROM alpine:3.21.3
+FROM alpine:3.22
 
 ENV USER=postgres
 
 RUN apk add --update busybox && \
     apk add --upgrade ssl_client && \
-    apk add --upgrade curl pgbackrest
+    apk add --upgrade curl pgbackrest openssh
 
 COPY --from=builder /workspace/build/_output/bin/pgskipper-pgbackrest-sidecar /usr/local/bin/pgskipper-pgbackrest-sidecar
 COPY build/start.sh /opt/start.sh
