@@ -27,7 +27,7 @@ ENV USER=postgres
 
 RUN apk add --update busybox && \
     apk add --upgrade ssl_client && \
-    apk add --upgrade curl pgbackrest openssh
+    apk add --upgrade curl pgbackrest=2.55.1-r0 openssh
 
 COPY --from=builder /workspace/build/_output/bin/pgskipper-pgbackrest-sidecar /usr/local/bin/pgskipper-pgbackrest-sidecar
 COPY build/start.sh /opt/start.sh
