@@ -20,7 +20,7 @@ function check_user(){
         sed -i '/postgres/d' /etc/passwd
         if ! whoami &> /dev/null; then
           if [ -w /etc/passwd ]; then
-            echo "postgres:x:$(id -u):0:postgres user:/var/lib/pgsql/data/postgresql_${POD_IDENTITY}:/sbin/nologin" >> /etc/passwd
+            echo "postgres:x:$(id -u):0:postgres user:${HOME}:/sbin/nologin" >> /etc/passwd
           fi
         fi
     fi
