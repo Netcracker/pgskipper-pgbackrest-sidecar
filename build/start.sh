@@ -36,5 +36,21 @@ function fix_backrest_permissions(){
     chown $1:$1 /var/spool/pgbackrest
 }
 
+function prepare_home_folder(){
+    mkdir -p ${HOME}/.ssh
+    chmod 700 ${HOME}/.ssh
+
+    cp /keys/id_rsa ${HOME}/.ssh/id_rsa
+    cp /keys/id_rsa.pub ${HOME}/.ssh/id_rsa.pub
+    cp /keys/id_rsa.pub ${HOME}/.ssh/authorized_keys
+    cp /keys/id_rsa.pub ${HOME}/.ssh/known_hosts
+    sed -i "s/ssh-rsa/pg-patroni ssh-rsa/" ${HOME}/.ssh/known_hosts
+
+    chmod 600 ${HOME}/.ssh/id_rsa
+}
+
 check_user
+if [ -n "$PGBACKREST_PG2_HOST" ]; then
+  prepare_home_folder
+fi
 /usr/local/bin/pgskipper-pgbackrest-sidecar
