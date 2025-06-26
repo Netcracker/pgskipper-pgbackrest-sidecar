@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM golang:1.23.8-alpine3.21 AS builder
+FROM --platform=$BUILDPLATFORM golang:1.23-alpine3.22 AS builder
 
 ENV GOSUMDB=off
 
@@ -23,7 +23,8 @@ RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -o ./build/_output/
 
 FROM alpine:3.22
 
-ENV USER=postgres
+ENV USER=postgres \
+    HOME=/home/pg
 
 RUN apk add --update busybox && \
     apk add --upgrade ssl_client && \
@@ -32,11 +33,13 @@ RUN apk add --update busybox && \
 COPY --from=builder /workspace/build/_output/bin/pgskipper-pgbackrest-sidecar /usr/local/bin/pgskipper-pgbackrest-sidecar
 COPY build/start.sh /opt/start.sh
 
+RUN mkdir ${HOME}
 
 RUN chgrp 0 /etc &&  \
     chmod g+w /etc && \
     chgrp 0 /etc/passwd &&  \
     chmod g+w /etc/passwd && \
+    chmod 777 ${HOME} && \
     chmod 770 /var/lib/pgbackrest && \
     chmod 770 /var/log/pgbackrest && \
     chmod 770 /var/spool/pgbackrest && \
