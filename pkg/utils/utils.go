@@ -36,17 +36,17 @@ type Payload struct {
 func ExecCommand(command string, args []string) (error, string) {
 	var output string
 
-	logger.Info(fmt.Sprintf("Executed command is %s with agrs %v", command, args))
+	logger.Info(fmt.Sprintf("Executed command is %s with args %v", command, args))
 	cmd := exec.Command(command, args...)
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-		logger.Error("While executing command an error occurs", zap.Error(err))
+		logger.Error("Error obtaining StdoutPipe", zap.Error(err))
 		return err, ""
 	}
-	if err1 := cmd.Start(); err1 != nil {
-		logger.Error("While executing command an error occurs", zap.Error(err1))
-		return err1, ""
+	if err := cmd.Start(); err != nil {
+		logger.Error("Error starting command", zap.Error(err))
+		return err, ""
 	}
 
 	in := bufio.NewScanner(stdout)
@@ -56,9 +56,14 @@ func ExecCommand(command string, args []string) (error, string) {
 		logger.Info(output)
 
 	}
-	if err2 := in.Err(); err2 != nil {
-		logger.Error("error", zap.Error(err2))
-		return err2, ""
+	if err = in.Err(); err != nil {
+		logger.Error("Error reading stdout", zap.Error(err))
+		return err, ""
+	}
+
+	if err := cmd.Wait(); err != nil {
+		logger.Error("Error waiting for command to finish", zap.Error(err))
+		return err, ""
 	}
 
 	return nil, output
