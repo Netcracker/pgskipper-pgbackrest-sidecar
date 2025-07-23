@@ -26,9 +26,59 @@ FROM alpine:3.22
 ENV USER=postgres \
     HOME=/home/pg
 
-RUN apk add --update busybox && \
-    apk add --upgrade ssl_client && \
-    apk add --upgrade curl pgbackrest=2.55.1-r0 openssh
+COPY build/build-pgbackrest.sh /tmp/build-pgbackrest.sh
+
+# Install build dependencies and runtime dependencies
+RUN apk add --update --no-cache \
+    # Runtime dependencies
+    busybox \
+    ssl_client \
+    curl \
+    openssh \
+    # Runtime libraries for pgbackrest
+    openssl \
+    libxml2 \
+    zlib \
+    bzip2 \
+    lz4 \
+    zstd \
+    postgresql-client \
+    yaml \
+    # Build dependencies for pgbackrest
+    build-base \
+    meson \
+    ninja \
+    autoconf \
+    automake \
+    libtool \
+    pkgconfig \
+    openssl-dev \
+    libxml2-dev \
+    zlib-dev \
+    bzip2-dev \
+    lz4-dev \
+    zstd-dev \
+    postgresql-dev \
+    yaml-dev \
+    wget \
+    tar && \
+    chmod +x /tmp/build-pgbackrest.sh && \
+    sh /tmp/build-pgbackrest.sh && \
+    rm /tmp/build-pgbackrest.sh && \
+    # Remove build dependencies to reduce image size
+    apk del \
+    build-base \
+    meson \
+    ninja \
+    autoconf \
+    automake \
+    libtool \
+    pkgconfig \
+    openssl-dev \
+    postgresql-dev \
+    yaml-dev \
+    wget \
+    tar
 
 COPY --from=builder /workspace/build/_output/bin/pgskipper-pgbackrest-sidecar /usr/local/bin/pgskipper-pgbackrest-sidecar
 COPY build/start.sh /opt/start.sh
