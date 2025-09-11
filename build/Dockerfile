@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM golang:1.23.7-alpine3.21 AS builder
+FROM --platform=$BUILDPLATFORM golang:1.25-alpine3.22 AS builder
 
 ENV GOSUMDB=off
 
@@ -21,7 +21,7 @@ ARG TARGETOS TARGETARCH
 RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -o ./build/_output/bin/pgskipper-pgbackrest-sidecar \
     -gcflags all=-trimpath=${GOPATH} -asmflags all=-trimpath=${GOPATH} ./main/main.go
 
-FROM alpine:3.21.3
+FROM alpine:3.22
 
 ENV USER=postgres
 
