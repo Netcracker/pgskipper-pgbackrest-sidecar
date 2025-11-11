@@ -2,7 +2,7 @@
 set -e
 
 # pgBackRest version to build
-PGBACKREST_VERSION="2.55.1"
+PGBACKREST_VERSION="2.57.0"
 PGBACKREST_URL="https://github.com/pgbackrest/pgbackrest/archive/release/${PGBACKREST_VERSION}.tar.gz"
 
 # Build directory
